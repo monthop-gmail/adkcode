@@ -8,7 +8,7 @@ AI coding agent powered by [Google ADK](https://google.github.io/adk-docs/) (Age
 - **3 ways to use** — Web UI (`adk web`), CLI REPL (`adk run`), API server (`adk api_server`)
 - **Multi-model** — smart model for analysis + fast model for execution (configurable)
 - **Multi-agent system** — orchestrator + coder + reviewer + tester agents
-- **8 coding tools** — read, write, edit, list, grep, shell, web_search, web_fetch
+- **9 coding tools** — read, write, edit, list, grep, shell, web_search, web_fetch, read_image
 - **AGENTS.md support** — project-specific instructions loaded automatically
 - **[MCP support](docs/mcp.md)** — connect to external tools via Model Context Protocol
 
@@ -57,6 +57,7 @@ adk api_server --port 8000
 | `grep` | Search text in files recursively |
 | `web_search` | Search the web via DuckDuckGo |
 | `web_fetch` | Fetch content from a URL |
+| `read_image` | Analyze images/screenshots with Gemini vision |
 | `shell` | Execute shell commands |
 
 ## AGENTS.md
@@ -106,14 +107,15 @@ adkcode uses a multi-agent system where each agent has a specialized role:
 
 ```
 adkcode (orchestrator) — web search, URL fetch, MCP tools
-    ├── coder    → write, edit, create code (read, write, edit, list, grep, shell)
-    ├── reviewer → review code quality, find bugs (read, list, grep — read-only)
+    ├── coder    → write, edit, create code + read images (read, write, edit, list, grep, shell, read_image)
+    ├── reviewer → review code quality, find bugs (read, list, grep, read_image — read-only)
     └── tester   → run tests, fix failures (read, write, edit, list, grep, shell)
 ```
 
 The orchestrator automatically routes your requests to the right agent based on what you ask. You can also ask for a specific agent:
 
 - *"สร้างไฟล์ hello.py"* → routes to **coder**
+- *"ดู screenshot.png แล้วเขียน HTML ตามนี้"* → routes to **coder** (read_image)
 - *"review โค้ดใน agent.py"* → routes to **reviewer**
 - *"รัน pytest"* → routes to **tester**
 - *"ค้นหาข่าว AI"* → handled by **orchestrator** directly

@@ -27,7 +27,9 @@ ORCHESTRATOR_PROMPT = """You are adkcode, an AI coding agent orchestrator. You c
 
 Route user requests to the appropriate agent:
 - Coding tasks (write, edit, create, fix, refactor) → coder
+- Implement UI from screenshot/mockup → coder (has read_image)
 - Code review, analysis, explain code → reviewer
+- Compare screenshot with UI code → reviewer (has read_image)
 - Run tests, check test results, fix failing tests → tester
 - General questions, web search, research → handle yourself
 
@@ -42,6 +44,7 @@ Guidelines:
 - Use edit_file for small changes (find & replace), write_file for new files or full rewrites
 - Write clean, well-structured code
 - Use shell to run commands when needed (install packages, build, etc.)
+- Use read_image to analyze screenshots, mockups, or diagrams and implement matching code
 - Be concise — show what you changed, not lengthy explanations
 """
 
@@ -52,6 +55,7 @@ Guidelines:
 - Look for: bugs, security issues, performance problems, code smells
 - Suggest specific improvements with examples
 - You have READ-ONLY access — you cannot modify files
+- Use read_image to analyze screenshots/mockups and compare with actual UI implementation
 - Be constructive and concise
 - Rate severity: critical, warning, suggestion
 """
@@ -155,7 +159,7 @@ def build_mcp_tools() -> list:
 coder = Agent(
     model=MODEL_FAST,
     name="coder",
-    description="Writes, edits, and creates code files. Use for any coding task: write new code, edit existing files, fix bugs, refactor, create projects.",
+    description="Writes, edits, and creates code files. Use for any coding task: write new code, edit existing files, fix bugs, refactor, create projects. Can also read images/screenshots to implement matching code.",
     instruction=build_instruction(CODER_PROMPT),
     tools=[
         tools.read_file,
@@ -164,18 +168,20 @@ coder = Agent(
         tools.list_files,
         tools.grep,
         tools.shell,
+        tools.read_image,
     ],
 )
 
 reviewer = Agent(
     model=MODEL_SMART,
     name="reviewer",
-    description="Reviews code for bugs, security issues, and best practices. Read-only analysis — does not modify files.",
+    description="Reviews code for bugs, security issues, and best practices. Read-only analysis — does not modify files. Can read images/screenshots to review UI implementations.",
     instruction=build_instruction(REVIEWER_PROMPT),
     tools=[
         tools.read_file,
         tools.list_files,
         tools.grep,
+        tools.read_image,
     ],
 )
 

@@ -1,5 +1,7 @@
 """Coding tools for adkcode agent."""
 
+import base64
+import mimetypes
 import os
 import subprocess
 import urllib.parse
@@ -247,5 +249,53 @@ def web_search(query: str) -> dict:
         if not results:
             return {"status": "success", "message": "No results found"}
         return {"status": "success", "results": results}
+    except Exception as e:
+        return {"status": "error", "error_message": str(e)}
+
+
+def read_image(path: str, question: str = "Describe this image in detail.") -> dict:
+    """Read an image file and return it for visual analysis. Supports PNG, JPG, GIF, WebP.
+
+    Use this tool to:
+    - Analyze screenshots and mockups to write matching code
+    - Read diagrams, flowcharts, or architecture images
+    - Extract text from images (OCR)
+    - Understand UI designs and implement them
+
+    Args:
+        path: The image file path to read.
+        question: What to analyze about the image (default: describe the image).
+
+    Returns:
+        dict with status and image data for the model to analyze.
+    """
+    SUPPORTED = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp"}
+    MAX_SIZE = 20 * 1024 * 1024  # 20MB
+
+    try:
+        ext = os.path.splitext(path)[1].lower()
+        if ext not in SUPPORTED:
+            return {"status": "error", "error_message": f"Unsupported image format '{ext}'. Supported: {', '.join(sorted(SUPPORTED))}"}
+
+        if not os.path.isfile(path):
+            return {"status": "error", "error_message": f"File not found: {path}"}
+
+        size = os.path.getsize(path)
+        if size > MAX_SIZE:
+            return {"status": "error", "error_message": f"Image too large ({size // 1024 // 1024}MB). Max: 20MB"}
+
+        mime_type = mimetypes.guess_type(path)[0] or "image/png"
+
+        with open(path, "rb") as f:
+            image_data = base64.b64encode(f.read()).decode("utf-8")
+
+        return {
+            "status": "success",
+            "mime_type": mime_type,
+            "image_base64": image_data,
+            "size_bytes": size,
+            "path": path,
+            "question": question,
+        }
     except Exception as e:
         return {"status": "error", "error_message": str(e)}
