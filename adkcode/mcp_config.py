@@ -5,8 +5,11 @@ import os
 from typing import Any
 
 
-def load_mcp_config() -> dict[str, Any]:
+def load_mcp_config(extra_servers: dict | None = None) -> dict[str, Any]:
     """Load MCP server config from mcp.json in working directory or agent directory.
+
+    Args:
+        extra_servers: Additional MCP servers to merge (e.g. from plugins).
 
     Expected format (same as Claude Code / Cursor):
     {
@@ -29,14 +32,19 @@ def load_mcp_config() -> dict[str, Any]:
         os.path.join(os.path.dirname(__file__), "..", "mcp.json"),
     ]
 
+    config = {"mcpServers": {}}
     for path in candidates:
         if os.path.isfile(path):
             try:
                 with open(path, "r", encoding="utf-8") as f:
-                    config = json.load(f)
-                if "mcpServers" in config:
-                    return config
+                    loaded = json.load(f)
+                if "mcpServers" in loaded:
+                    config = loaded
+                    break
             except Exception:
                 pass
 
-    return {"mcpServers": {}}
+    if extra_servers:
+        config["mcpServers"].update(extra_servers)
+
+    return config

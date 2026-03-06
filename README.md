@@ -12,6 +12,7 @@ AI coding agent powered by [Google ADK](https://google.github.io/adk-docs/) (Age
 - **RAG search** — semantic code search using Gemini embeddings (free)
 - **[AGENTS.md support](docs/agents-md.md)** — project-specific instructions loaded automatically
 - **[MCP support](docs/mcp.md)** — connect to external tools via Model Context Protocol
+- **Plugin system** — load knowledge-work plugins (skills, commands) from `plugins/` directory
 
 ## Quick Start
 
@@ -198,6 +199,34 @@ Audit log format:
 {"timestamp": "2026-03-06T12:00:00Z", "agent": "coder", "tool": "shell", "args": {"command": "ls"}, "result": "success"}
 ```
 
+## Plugin System
+
+adkcode supports knowledge-work plugins that add domain skills and commands. Drop a plugin into `plugins/` and it's automatically loaded.
+
+```
+plugins/
+└── engineering/                    # Included by default
+    ├── .claude-plugin/plugin.json  # Plugin metadata
+    ├── skills/                     # Domain knowledge (auto-injected into agent prompts)
+    │   ├── code-review/SKILL.md
+    │   ├── testing-strategy/SKILL.md
+    │   ├── system-design/SKILL.md
+    │   ├── documentation/SKILL.md
+    │   ├── tech-debt/SKILL.md
+    │   └── incident-response/SKILL.md
+    └── commands/                   # Slash commands (/review, /debug, etc.)
+        ├── review.md
+        ├── debug.md
+        ├── standup.md
+        ├── architecture.md
+        ├── incident.md
+        └── deploy-checklist.md
+```
+
+Skills are routed to the right agent: code-review → reviewer, testing → tester, debug/docs → coder.
+
+Compatible with [Anthropic Knowledge Work Plugins](https://github.com/anthropics/knowledge-work-plugins) format.
+
 ## Project Structure
 
 ```
@@ -208,7 +237,10 @@ adkcode/
 │   ├── tools.py            # 11 coding tools
 │   ├── rag.py              # RAG: semantic code search with embeddings
 │   ├── guardrails.py       # Safety checks, file access, audit log
-│   └── mcp_config.py       # MCP server config loader
+│   ├── mcp_config.py       # MCP server config loader
+│   └── plugin_loader.py    # Plugin system (skills, commands, MCP)
+├── plugins/
+│   └── engineering/        # Engineering skills & commands
 ├── docs/
 │   ├── agents-md.md        # AGENTS.md guide
 │   └── mcp.md              # MCP guide
@@ -245,9 +277,8 @@ Both are open-source AI coding agents with the same 8 tools and AGENTS.md suppor
 See [ROADMAP.md](ROADMAP.md) for the full development plan.
 
 **Next up:**
-- Multi-Model (Pro for hard tasks, Flash for easy tasks)
-- Safety guardrails (confirm before dangerous commands)
-- Git tools, test runner
+- Better tools (git, test runner, code analysis)
+- Production ready (auth, persistence, multi-user)
 
 ## Contributing
 

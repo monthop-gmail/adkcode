@@ -7,6 +7,15 @@ from google.adk.agents import Agent
 
 from . import tools
 from .mcp_config import load_mcp_config
+from .plugin_loader import (
+    load_plugins,
+    get_skills_for_agent,
+    get_all_skills,
+    get_all_commands,
+    get_merged_mcp_servers,
+    format_skills_instruction,
+    format_commands_instruction,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -16,6 +25,9 @@ MODEL_SMART = os.environ.get("ADKCODE_MODEL_SMART", "gemini-2.5-flash")
 MODEL_FAST = os.environ.get("ADKCODE_MODEL_FAST", "gemini-2.0-flash")
 
 logger.info(f"Models: smart={MODEL_SMART}, fast={MODEL_FAST}")
+
+# --- Plugin System ---
+_plugins = load_plugins()
 
 # --- Specialized Prompts ---
 
@@ -89,18 +101,33 @@ def load_agents_md() -> str:
     return ""
 
 
-def build_instruction(base_prompt: str) -> str:
-    """Build the full instruction with AGENTS.md content if available."""
+def build_instruction(base_prompt: str, agent_name: str = "") -> str:
+    """Build the full instruction with AGENTS.md and plugin skills/commands."""
     instruction = base_prompt
+
+    # AGENTS.md (project-specific instructions)
     agents_md = load_agents_md()
     if agents_md:
         instruction += f"\n\n# Project Instructions (from AGENTS.md)\n\n{agents_md}"
+
+    # Plugin skills & commands
+    if _plugins:
+        if agent_name == "adkcode":
+            # Orchestrator gets all skills + all commands
+            instruction += format_skills_instruction(get_all_skills(_plugins))
+            instruction += format_commands_instruction(get_all_commands(_plugins))
+        elif agent_name:
+            # Sub-agents get routed skills only
+            skills = get_skills_for_agent(_plugins, agent_name)
+            instruction += format_skills_instruction(skills)
+
     return instruction
 
 
 def build_mcp_tools() -> list:
     """Load MCP tools from mcp.json config."""
-    config = load_mcp_config()
+    plugin_mcp = get_merged_mcp_servers(_plugins) if _plugins else {}
+    config = load_mcp_config(extra_servers=plugin_mcp)
     servers = config.get("mcpServers", {})
 
     if not servers:
@@ -162,7 +189,7 @@ coder = Agent(
     model=MODEL_FAST,
     name="coder",
     description="Writes, edits, and creates code files. Use for any coding task: write new code, edit existing files, fix bugs, refactor, create projects. Can also read images/screenshots to implement matching code.",
-    instruction=build_instruction(CODER_PROMPT),
+    instruction=build_instruction(CODER_PROMPT, agent_name="coder"),
     tools=[
         tools.read_file,
         tools.write_file,
@@ -180,7 +207,7 @@ reviewer = Agent(
     model=MODEL_SMART,
     name="reviewer",
     description="Reviews code for bugs, security issues, and best practices. Read-only analysis — does not modify files. Can read images/screenshots to review UI implementations.",
-    instruction=build_instruction(REVIEWER_PROMPT),
+    instruction=build_instruction(REVIEWER_PROMPT, agent_name="reviewer"),
     tools=[
         tools.read_file,
         tools.list_files,
@@ -194,7 +221,7 @@ tester = Agent(
     model=MODEL_FAST,
     name="tester",
     description="Runs tests, analyzes test results, and fixes failing tests. Use for pytest, jest, go test, or any test framework.",
-    instruction=build_instruction(TESTER_PROMPT),
+    instruction=build_instruction(TESTER_PROMPT, agent_name="tester"),
     tools=[
         tools.read_file,
         tools.write_file,
@@ -220,7 +247,7 @@ root_agent = Agent(
     model=MODEL_SMART,
     name="adkcode",
     description="AI coding agent orchestrator with specialized sub-agents for coding, reviewing, and testing.",
-    instruction=build_instruction(ORCHESTRATOR_PROMPT),
+    instruction=build_instruction(ORCHESTRATOR_PROMPT, agent_name="adkcode"),
     tools=orchestrator_tools,
     sub_agents=[coder, reviewer, tester],
 )

@@ -62,8 +62,10 @@ adkcode (orchestrator) — web_search, web_fetch, MCP tools
 ## Ideas (Unscheduled)
 
 - [x] RAG — semantic code search ด้วย Gemini embeddings (index_codebase + semantic_search)
+- [x] Plugin system — โหลด knowledge-work plugins (skills, commands) จาก `plugins/` directory
+- [x] Engineering plugin — code review, testing strategy, debugging, architecture, incident response
 - [ ] Voice input/output
-- [ ] Custom slash commands (/commit, /test, /review, /deploy)
+- [ ] More plugins — sales, data, productivity, etc.
 - [ ] Agent marketplace — share/install custom agents
 - [ ] Git-aware context — auto-include changed files
 - [ ] Self-improving — agent เรียนรู้จาก feedback
