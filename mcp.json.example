@@ -16,6 +16,25 @@
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-postgres", "postgresql://user:pass@localhost:5432/mydb"]
     },
+
+    "_comment_google": "--- Google MCP Servers ---",
+
+    "google-maps": {
+      "command": "npx",
+      "args": ["-y", "@googlemaps/code-assist-mcp@latest"]
+    },
+    "gdrive": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-gdrive"]
+    },
+    "google-workspace": {
+      "command": "uvx",
+      "args": ["google-workspace-mcp"],
+      "env": {
+        "GOOGLE_OAUTH_CREDENTIALS": "/path/to/client_secret.json"
+      }
+    },
+
     "remote-example": {
       "url": "https://my-mcp-server.com/sse",
       "headers": {

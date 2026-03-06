@@ -198,6 +198,149 @@ Query database โดยตรง
 }
 ```
 
+## Google MCP Servers
+
+Google มี MCP servers อย่างเป็นทางการหลายตัว ทั้งแบบ open-source และ managed service:
+
+### Google Maps Platform
+
+Code assist toolkit สำหรับ Maps API — ช่วยเขียนโค้ดที่ใช้ Google Maps ได้ถูกต้องตาม docs ล่าสุด
+
+```json
+{
+  "mcpServers": {
+    "google-maps": {
+      "command": "npx",
+      "args": ["-y", "@googlemaps/code-assist-mcp@latest"]
+    }
+  }
+}
+```
+
+Tools ที่ได้: code assistance สำหรับ Maps JavaScript API, Places API, Geocoding API, Routes API และอื่นๆ
+
+### Google Drive (by Anthropic)
+
+อ่าน/ค้นหาไฟล์ใน Google Drive ผ่าน OAuth
+
+```json
+{
+  "mcpServers": {
+    "gdrive": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-gdrive"]
+    }
+  }
+}
+```
+
+Tools ที่ได้: `search`, `read_file` — ต้อง OAuth2 authentication ตอนรันครั้งแรก
+
+### Google Workspace (Community)
+
+ครอบคลุม Gmail, Calendar, Docs, Sheets, Slides, Chat, Tasks, Drive ในตัวเดียว
+
+```json
+{
+  "mcpServers": {
+    "google-workspace": {
+      "command": "uvx",
+      "args": ["google-workspace-mcp"],
+      "env": {
+        "GOOGLE_OAUTH_CREDENTIALS": "/path/to/client_secret.json"
+      }
+    }
+  }
+}
+```
+
+Tools ที่ได้: `gmail_send`, `calendar_create_event`, `docs_create`, `sheets_read`, `drive_search` และอื่นๆ
+
+> ที่มา: [taylorwilsdon/google_workspace_mcp](https://github.com/taylorwilsdon/google_workspace_mcp)
+
+### MCP Toolbox for Databases (by Google)
+
+รองรับ BigQuery, Cloud SQL, AlloyDB, Spanner, Firestore — เชื่อมต่อ Google Cloud databases
+
+```json
+{
+  "mcpServers": {
+    "toolbox-db": {
+      "command": "toolbox",
+      "args": ["--tools-file", "tools.yaml", "--mcp"]
+    }
+  }
+}
+```
+
+ติดตั้ง:
+```bash
+# macOS / Linux
+brew install mcp-toolbox
+
+# หรือ Docker
+docker run -p 5000:5000 us-central1-docker.pkg.dev/database-toolbox/toolbox/toolbox:latest
+
+# Python SDK (สำหรับ ADK)
+pip install toolbox-adk
+```
+
+> ที่มา: [googleapis/genai-toolbox](https://github.com/googleapis/genai-toolbox)
+
+### gcloud CLI MCP
+
+ใช้ Google Cloud CLI ผ่าน MCP — จัดการ Cloud resources ทุกอย่าง
+
+```json
+{
+  "mcpServers": {
+    "gcloud": {
+      "command": "npx",
+      "args": ["-y", "@anthropic-ai/gcloud-mcp"]
+    }
+  }
+}
+```
+
+> ที่มา: [googleapis/gcloud-mcp](https://github.com/googleapis/gcloud-mcp)
+
+### Chrome DevTools
+
+Debug เว็บไซต์ผ่าน Chrome DevTools Protocol
+
+```json
+{
+  "mcpServers": {
+    "chrome-devtools": {
+      "command": "npx",
+      "args": ["-y", "@anthropic-ai/chrome-devtools-mcp"]
+    }
+  }
+}
+```
+
+Tools ที่ได้: inspect DOM, network requests, console logs, screenshots, performance profiling
+
+> ที่มา: [ChromeDevTools/chrome-devtools-mcp](https://github.com/ChromeDevTools/chrome-devtools-mcp)
+
+### Google Cloud Managed MCP Servers (Remote)
+
+Google Cloud ให้บริการ managed MCP servers แบบ remote (SSE) สำหรับ enterprise:
+
+| Service | Description |
+|---------|-------------|
+| BigQuery | Query และจัดการ data warehouse |
+| Maps Grounding Lite | Geospatial data สำหรับ AI agents |
+| GKE (Kubernetes Engine) | จัดการ Kubernetes clusters |
+| GCE (Compute Engine) | จัดการ VMs |
+| Cloud Storage | จัดการ object storage |
+| Cloud Run | Deploy และจัดการ serverless containers |
+| Security Operations | Chronicle + Security Command Center |
+
+ใช้งานผ่าน Google Cloud Console โดยไม่ต้องติดตั้งอะไรเพิ่ม — ต้องมี Google Cloud account และ IAM permissions
+
+> ดูรายละเอียด: [Google Cloud MCP Overview](https://docs.google.com/mcp/overview)
+
 ## Tool Filtering
 
 ใช้ `tool_filter` เพื่อเลือกเฉพาะ tools ที่ต้องการจาก MCP server:
@@ -287,3 +430,7 @@ RUN apt-get install -y nodejs npm
 - [MCP Servers Directory](https://github.com/modelcontextprotocol/servers)
 - [Google ADK MCP Docs](https://google.github.io/adk-docs/tools-custom/mcp-tools/)
 - [MCP GitHub](https://github.com/modelcontextprotocol/modelcontextprotocol)
+- [Google MCP Servers](https://github.com/google/mcp) — รวม MCP servers จาก Google ทั้งหมด
+- [Google Cloud MCP Overview](https://docs.cloud.google.com/mcp/overview) — Managed MCP servers
+- [MCP Toolbox for Databases](https://github.com/googleapis/genai-toolbox) — BigQuery, Cloud SQL, AlloyDB, Spanner
+- [Google Workspace MCP](https://github.com/taylorwilsdon/google_workspace_mcp) — Gmail, Calendar, Docs, Sheets
