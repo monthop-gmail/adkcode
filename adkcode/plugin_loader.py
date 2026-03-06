@@ -150,7 +150,24 @@ def _load_plugin(plugin_dir: str) -> Plugin | None:
 
 
 def load_plugins(plugins_dir: str | None = None) -> list[Plugin]:
-    """Scan plugins directory and load all valid plugins."""
+    """Scan plugins directory and load all valid plugins.
+
+    Use ADKCODE_PLUGINS env var to control which plugins are loaded:
+      - Not set or empty: load all plugins
+      - Comma-separated names: load only listed plugins (e.g. "engineering,data")
+      - "none": disable all plugins
+    """
+    # Check enabled filter
+    enabled_env = os.environ.get("ADKCODE_PLUGINS", "").strip()
+    if enabled_env.lower() == "none":
+        logger.info("Plugins disabled (ADKCODE_PLUGINS=none)")
+        return []
+    enabled_filter = (
+        {name.strip() for name in enabled_env.split(",") if name.strip()}
+        if enabled_env
+        else None  # None = load all
+    )
+
     if plugins_dir is None:
         plugins_dir = os.environ.get("ADKCODE_PLUGINS_DIR")
         if not plugins_dir:
@@ -168,6 +185,9 @@ def load_plugins(plugins_dir: str | None = None) -> list[Plugin]:
 
     plugins = []
     for entry in sorted(os.listdir(plugins_dir)):
+        if enabled_filter is not None and entry not in enabled_filter:
+            logger.debug(f"Plugin [{entry}]: skipped (not in ADKCODE_PLUGINS)")
+            continue
         full = os.path.join(plugins_dir, entry)
         if os.path.isdir(full):
             plugin = _load_plugin(full)
