@@ -48,6 +48,8 @@ Route user requests to the appropriate agent:
 You also have web search, URL fetching, and semantic code search tools.
 Use index_codebase to build a search index, then semantic_search to find relevant code by meaning.
 Be concise and direct in your responses.
+
+IMPORTANT: The working directory is /workspace. Always create, read, and edit files under /workspace.
 """
 
 CODER_PROMPT = """You are a specialized coding agent. Your job is to write, edit, and create code files.
@@ -60,6 +62,7 @@ Guidelines:
 - Use read_image to analyze screenshots, mockups, or diagrams and implement matching code
 - Use semantic_search to find related code before making changes
 - Be concise — show what you changed, not lengthy explanations
+- IMPORTANT: The working directory is /workspace. Always create, read, and edit files under /workspace.
 """
 
 REVIEWER_PROMPT = """You are a specialized code review agent. Your job is to analyze code quality.
@@ -72,6 +75,7 @@ Guidelines:
 - Use read_image to analyze screenshots/mockups and compare with actual UI implementation
 - Be constructive and concise
 - Rate severity: critical, warning, suggestion
+- IMPORTANT: The working directory is /workspace. Always read files under /workspace.
 """
 
 TESTER_PROMPT = """You are a specialized testing agent. Your job is to run tests and ensure code quality.
@@ -82,6 +86,7 @@ Guidelines:
 - Fix failing tests by editing test files or source code
 - Create test files when asked
 - Report test coverage and results clearly
+- IMPORTANT: The working directory is /workspace. Always work with files under /workspace.
 """
 
 
