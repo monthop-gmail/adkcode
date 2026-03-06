@@ -152,9 +152,18 @@ Both are open-source AI coding agents with the same 8 tools and AGENTS.md suppor
 | Lines of code | ~1,500 | ~300 |
 | Best for | ใช้กับ LLM provider ที่หลากหลาย | ใช้กับ Gemini + ต้องการ Web UI สำเร็จรูป |
 
+## Roadmap
+
+See [ROADMAP.md](ROADMAP.md) for the full development plan.
+
+**Next up:**
+- Multi-Agent (orchestrator + coder + reviewer + test agents)
+- Multi-Model (Pro for hard tasks, Flash for easy tasks)
+- Safety guardrails (confirm before dangerous commands)
+
 ## Contributing
 
-Contributions are welcome! Feel free to open issues and pull requests.
+Contributions are welcome! Check the [Roadmap](ROADMAP.md) for ideas and open a PR.
 
 ## License
 
