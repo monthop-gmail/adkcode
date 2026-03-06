@@ -63,6 +63,11 @@ def _parse_yaml_frontmatter(text: str) -> tuple[dict, str]:
     return meta, body
 
 
+def _escape_braces(text: str) -> str:
+    """Escape {var} patterns so ADK doesn't treat them as context variables."""
+    return text.replace("{", "{{").replace("}", "}}")
+
+
 def _load_plugin(plugin_dir: str) -> Plugin | None:
     """Load a single plugin from a directory."""
     pj_path = os.path.join(plugin_dir, ".claude-plugin", "plugin.json")
@@ -103,7 +108,7 @@ def _load_plugin(plugin_dir: str) -> Plugin | None:
                     Skill(
                         name=meta.get("name", skill_name),
                         description=meta.get("description", ""),
-                        content=body,
+                        content=_escape_braces(body),
                         plugin_name=plugin.name,
                     )
                 )
@@ -125,7 +130,7 @@ def _load_plugin(plugin_dir: str) -> Plugin | None:
                         name=fname.removesuffix(".md"),
                         description=meta.get("description", ""),
                         argument_hint=meta.get("argument-hint", ""),
-                        content=body,
+                        content=_escape_braces(body),
                         plugin_name=plugin.name,
                     )
                 )
