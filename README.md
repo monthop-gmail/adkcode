@@ -70,6 +70,34 @@ Place an `AGENTS.md` file in your working directory to give adkcode project-spec
 
 See [gocode/examples/agents-md/](https://github.com/monthop-gmail/gocode/tree/master/examples/agents-md) for 21 ready-to-use templates.
 
+## MCP (Model Context Protocol)
+
+adkcode supports MCP servers out of the box. Create a `mcp.json` in your project root:
+
+```json
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/workspace"]
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": { "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_xxx" }
+    },
+    "remote-server": {
+      "url": "https://my-mcp-server.com/sse",
+      "headers": { "Authorization": "Bearer xxx" }
+    }
+  }
+}
+```
+
+Supports both **stdio** (local) and **SSE** (remote) MCP servers. Uses the same format as Claude Code / Cursor.
+
+See `mcp.json.example` for more examples.
+
 ## Configuration
 
 Set your API key in `.env`:
@@ -93,9 +121,11 @@ root_agent = Agent(
 adkcode/
 ├── adkcode/
 │   ├── __init__.py         # Exports root_agent
-│   ├── agent.py            # Agent definition + AGENTS.md loader
-│   └── tools.py            # 8 coding tools
+│   ├── agent.py            # Agent definition + AGENTS.md + MCP loader
+│   ├── tools.py            # 8 coding tools
+│   └── mcp_config.py       # MCP server config loader
 ├── requirements.txt
+├── mcp.json.example
 ├── .env.example
 ├── Dockerfile
 ├── docker-compose.yml
