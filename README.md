@@ -13,6 +13,7 @@ AI coding agent powered by [Google ADK](https://google.github.io/adk-docs/) (Age
 - **[AGENTS.md support](docs/agents-md.md)** — project-specific instructions loaded automatically
 - **[MCP support](docs/mcp.md)** — connect to external tools via Model Context Protocol
 - **Plugin system** — load knowledge-work plugins (skills, commands) from `plugins/` directory
+- **[Getting started guide](docs/getting-started.md)** — คู่มือใช้งานเบื้องต้น (ภาษาไทย)
 
 ## Quick Start
 
@@ -201,31 +202,40 @@ Audit log format:
 
 ## Plugin System
 
-adkcode supports knowledge-work plugins that add domain skills and commands. Drop a plugin into `plugins/` and it's automatically loaded.
+adkcode supports knowledge-work plugins that add domain skills and commands. Drop a plugin into `plugins/` and it's automatically loaded. Compatible with [Anthropic Knowledge Work Plugins](https://github.com/anthropics/knowledge-work-plugins) format.
+
+### Included Plugins
+
+| Plugin | Skills | Commands |
+|--------|:------:|:--------:|
+| **engineering** | 6 | `/review`, `/debug`, `/standup`, `/architecture`, `/incident`, `/deploy-checklist` |
+| **data** | 7 | `/write-query`, `/analyze`, `/explore-data`, `/create-viz`, `/build-dashboard`, `/validate` |
+| **productivity** | 2 | `/start`, `/update` |
+
+Skills are auto-routed to the right agent: code-review → reviewer, testing → tester, debug/docs → coder.
+
+### Plugin Control
+
+```bash
+# Load specific plugins only (saves context window)
+ADKCODE_PLUGINS=engineering,data
+
+# Disable all plugins
+ADKCODE_PLUGINS=none
+
+# Load all (default)
+# ADKCODE_PLUGINS=
+```
+
+### Plugin Structure
 
 ```
 plugins/
-└── engineering/                    # Included by default
+└── engineering/
     ├── .claude-plugin/plugin.json  # Plugin metadata
-    ├── skills/                     # Domain knowledge (auto-injected into agent prompts)
-    │   ├── code-review/SKILL.md
-    │   ├── testing-strategy/SKILL.md
-    │   ├── system-design/SKILL.md
-    │   ├── documentation/SKILL.md
-    │   ├── tech-debt/SKILL.md
-    │   └── incident-response/SKILL.md
-    └── commands/                   # Slash commands (/review, /debug, etc.)
-        ├── review.md
-        ├── debug.md
-        ├── standup.md
-        ├── architecture.md
-        ├── incident.md
-        └── deploy-checklist.md
+    ├── skills/*/SKILL.md           # Domain knowledge (auto-injected)
+    └── commands/*.md               # Slash commands
 ```
-
-Skills are routed to the right agent: code-review → reviewer, testing → tester, debug/docs → coder.
-
-Compatible with [Anthropic Knowledge Work Plugins](https://github.com/anthropics/knowledge-work-plugins) format.
 
 ## Project Structure
 
@@ -240,8 +250,11 @@ adkcode/
 │   ├── mcp_config.py       # MCP server config loader
 │   └── plugin_loader.py    # Plugin system (skills, commands, MCP)
 ├── plugins/
-│   └── engineering/        # Engineering skills & commands
+│   ├── engineering/        # Engineering skills & commands
+│   ├── data/               # Data analysis, SQL, visualization
+│   └── productivity/       # Task management, memory
 ├── docs/
+│   ├── getting-started.md  # Getting started guide (Thai)
 │   ├── agents-md.md        # AGENTS.md guide
 │   └── mcp.md              # MCP guide
 ├── examples/
