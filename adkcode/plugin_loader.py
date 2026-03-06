@@ -64,8 +64,12 @@ def _parse_yaml_frontmatter(text: str) -> tuple[dict, str]:
 
 
 def _escape_braces(text: str) -> str:
-    """Escape {var} patterns so ADK doesn't treat them as context variables."""
-    return text.replace("{", "{{").replace("}", "}}")
+    """Escape {var} patterns so ADK doesn't treat them as context variables.
+
+    ADK regex {+[^{}]*}+ matches any number of braces, so {{ }} won't work.
+    Replace with fullwidth Unicode equivalents that look identical but don't match.
+    """
+    return text.replace("{", "\uff5b").replace("}", "\uff5d")
 
 
 def _load_plugin(plugin_dir: str) -> Plugin | None:
