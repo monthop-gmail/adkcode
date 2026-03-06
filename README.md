@@ -1,0 +1,121 @@
+# adkcode
+
+AI coding agent powered by [Google ADK](https://google.github.io/adk-docs/) (Agent Development Kit). Same coding tools as [gocode](https://github.com/monthop-gmail/gocode) but built on Google's agent framework with Gemini models.
+
+## Features
+
+- **Google ADK framework** — agent loop, session management, streaming built-in
+- **3 ways to use** — Web UI (`adk web`), CLI REPL (`adk run`), API server (`adk api_server`)
+- **Gemini models** — powered by `gemini-2.0-flash` (configurable)
+- **8 coding tools** — read, write, edit, list, grep, shell, web_search, web_fetch
+- **AGENTS.md support** — project-specific instructions loaded automatically
+
+## Quick Start
+
+### 1. Clone & configure
+
+```bash
+git clone https://github.com/monthop-gmail/adkcode.git
+cd adkcode
+cp .env.example .env
+# Edit .env — add your Gemini API key from https://aistudio.google.com
+```
+
+### 2. Run with Docker Compose
+
+```bash
+docker compose up -d
+```
+
+Open http://localhost:8000 — select `adkcode` from the dropdown and start chatting!
+
+### 3. Run locally (without Docker)
+
+```bash
+pip install -r requirements.txt
+
+# Web UI
+adk web --port 8000
+
+# CLI REPL
+adk run adkcode
+
+# API Server
+adk api_server --port 8000
+```
+
+## Tools
+
+| Tool | Description |
+|------|-------------|
+| `read_file` | Read file contents |
+| `write_file` | Create or overwrite files |
+| `edit_file` | Partial edit via find & replace |
+| `list_files` | List directory contents |
+| `grep` | Search text in files recursively |
+| `web_search` | Search the web via DuckDuckGo |
+| `web_fetch` | Fetch content from a URL |
+| `shell` | Execute shell commands |
+
+## AGENTS.md
+
+Place an `AGENTS.md` file in your working directory to give adkcode project-specific instructions.
+
+```markdown
+# AGENTS.md
+- Always respond in Thai
+- Use Python conventions
+- Write tests for every new function
+```
+
+See [gocode/examples/agents-md/](https://github.com/monthop-gmail/gocode/tree/master/examples/agents-md) for 21 ready-to-use templates.
+
+## Configuration
+
+Set your API key in `.env`:
+
+```bash
+GOOGLE_API_KEY=your-api-key-here
+```
+
+To change the model, edit `adkcode/agent.py`:
+
+```python
+root_agent = Agent(
+    model="gemini-2.0-flash",  # or "gemini-2.5-pro", "gemini-2.5-flash"
+    ...
+)
+```
+
+## Project Structure
+
+```
+adkcode/
+├── adkcode/
+│   ├── __init__.py         # Exports root_agent
+│   ├── agent.py            # Agent definition + AGENTS.md loader
+│   └── tools.py            # 8 coding tools
+├── requirements.txt
+├── .env.example
+├── Dockerfile
+├── docker-compose.yml
+└── README.md
+```
+
+## gocode vs adkcode
+
+| | gocode | adkcode |
+|---|--------|---------|
+| Language | Go | Python |
+| Framework | Custom server | Google ADK |
+| LLM | Any OpenAI-compatible | Gemini |
+| UI | Terminal only | Web UI + Terminal + API |
+| Lines of code | ~1500 | ~300 |
+
+## Contributing
+
+Contributions are welcome! Feel free to open issues and pull requests.
+
+## License
+
+MIT

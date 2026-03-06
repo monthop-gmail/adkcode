@@ -1,0 +1,11 @@
+services:
+  adkcode:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./workspace:/workspace
+      - ./.env:/app/adkcode/.env:ro
+    environment:
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY:-}
+    restart: unless-stopped
