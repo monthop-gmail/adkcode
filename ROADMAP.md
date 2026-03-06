@@ -1,24 +1,24 @@
 # Roadmap
 
-## Phase 1 — Core (Done)
+## Phase 1 — Core ✅
 
 - [x] Google ADK agent with Gemini model
 - [x] 8 coding tools: read_file, write_file, edit_file, list_files, grep, shell, web_search, web_fetch
 - [x] AGENTS.md support — project-specific instructions
-- [x] MCP support — stdio + SSE connections
+- [x] MCP support — stdio + SSE connections, Google MCP servers documented
 - [x] Docker Compose setup
 - [x] .env configuration
 - [x] Documentation (README, docs/mcp.md)
 
-## Phase 2 — Multi-Agent (Done)
+## Phase 2 — Multi-Agent ✅
 
-ADK รองรับ sub-agents — ใช้ประโยชน์จากจุดแข็งนี้:
+ADK `sub_agents` parameter — LLM route request ไป agent ที่เหมาะสมอัตโนมัติ:
 
 - [x] Orchestrator pattern — root agent สั่งงาน sub-agents
 - [x] Coder agent — เขียน/แก้โค้ดโดยเฉพาะ
-- [x] Reviewer agent — review โค้ด (read-only)
+- [x] Reviewer agent — review โค้ด (read-only, ไม่แก้ไฟล์)
 - [x] Test agent — รัน test + วิเคราะห์ผลอัตโนมัติ
-- [x] Agent routing — LLM เลือก agent ที่เหมาะกับงานอัตโนมัติ
+- [x] Agent routing — LLM เลือก agent ตาม description อัตโนมัติ
 
 ```
 adkcode (orchestrator) — web_search, web_fetch, MCP tools
@@ -27,10 +27,11 @@ adkcode (orchestrator) — web_search, web_fetch, MCP tools
     └── tester   → รัน test + แก้ bug (read, write, edit, list, grep, shell)
 ```
 
-## Phase 3 — Multi-Model & Intelligence
+## Phase 3 — Multi-Model ✅
 
 - [x] Multi-model — smart model (orchestrator, reviewer) + fast model (coder, tester)
 - [x] Configurable via env vars — `ADKCODE_MODEL_SMART`, `ADKCODE_MODEL_FAST`
+- [x] Default: `gemini-2.5-flash` (smart) + `gemini-2.0-flash` (fast)
 - [ ] Image understanding — ใช้ Gemini vision อ่านรูป/screenshot แล้วเขียนโค้ด
 - [ ] Context management — summarize/compress เมื่อ token ใกล้ limit
 - [ ] Cost tracking — ประมาณ token usage ต่อ session
