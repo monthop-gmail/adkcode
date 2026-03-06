@@ -6,7 +6,7 @@ services:
     volumes:
       - ./workspace:/workspace
       - ./.env:/app/adkcode/.env:ro
-      - ./plugins:/app/plugins:ro
+      - ./plugins:/app/adkcode/plugins:ro
     environment:
       - GOOGLE_API_KEY=${GOOGLE_API_KEY:-}
     restart: unless-stopped

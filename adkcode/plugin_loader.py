@@ -182,7 +182,7 @@ def load_plugins(plugins_dir: str | None = None) -> list[Plugin]:
         if not plugins_dir:
             candidates = [
                 os.path.join(os.getcwd(), "plugins"),
-                os.path.join(os.path.dirname(__file__), "..", "plugins"),
+                os.path.join(os.path.dirname(__file__), "plugins"),
             ]
             for c in candidates:
                 if os.path.isdir(c):
