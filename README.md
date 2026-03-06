@@ -95,7 +95,7 @@ Place an `AGENTS.md` file in your working directory to give adkcode project-spec
 - Write tests for every new function
 ```
 
-See [gocode/examples/agents-md/](https://github.com/monthop-gmail/gocode/tree/master/examples/agents-md) for 21 ready-to-use templates.
+See [examples/agents-md/](examples/agents-md/) for 21 ready-to-use templates.
 
 ## MCP (Model Context Protocol)
 
