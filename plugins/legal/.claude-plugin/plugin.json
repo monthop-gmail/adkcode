@@ -1,0 +1,11 @@
+{
+  "name": "legal",
+  "version": "1.0.0",
+  "description": "Thai Legal Assistant — Contract review, legal research, and legal document drafting with Thai law context",
+  "author": {
+    "name": "Monthop",
+    "email": "monthop@gmail.com"
+  },
+  "keywords": ["legal", "law", "thai-law", "contract", "litigation"],
+  "repository": "https://github.com/monthop-gmail/adkcode"
+}
