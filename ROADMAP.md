@@ -61,7 +61,7 @@ adkcode (orchestrator) — web_search, web_fetch, MCP tools
 
 ## Ideas (Unscheduled)
 
-- [ ] RAG — index codebase สำหรับ search ที่แม่นยำขึ้น
+- [x] RAG — semantic code search ด้วย Gemini embeddings (index_codebase + semantic_search)
 - [ ] Voice input/output
 - [ ] Custom slash commands (/commit, /test, /review, /deploy)
 - [ ] Agent marketplace — share/install custom agents

@@ -6,3 +6,4 @@ __pycache__/
 venv/
 workspace/
 .DS_Store
+.adkcode_index.json

@@ -338,3 +338,59 @@ def read_image(path: str, question: str = "Describe this image in detail.") -> d
         }
     except Exception as e:
         return {"status": "error", "error_message": str(e)}
+
+
+def index_codebase(path: str = ".") -> dict:
+    """Scan and index source code files for semantic search using Gemini embeddings.
+
+    This creates a searchable index of the codebase. Run this before using semantic_search.
+    The index is saved to .adkcode_index.json and reused across sessions.
+
+    Args:
+        path: Root directory to index (default: current directory).
+
+    Returns:
+        dict with status, number of files indexed, and chunks created.
+    """
+    try:
+        from .rag import get_index
+        index = get_index()
+        result = index.build(path)
+        audit_log("tools", "index_codebase", {"path": path}, result["status"])
+        return result
+    except Exception as e:
+        audit_log("tools", "index_codebase", {"path": path}, "error")
+        return {"status": "error", "error_message": str(e)}
+
+
+def semantic_search(query: str, top_k: int = 5) -> dict:
+    """Search the codebase by meaning using Gemini embeddings. More powerful than grep — finds semantically related code even without exact keyword matches.
+
+    Run index_codebase first to build the search index. Examples:
+    - semantic_search("authentication logic") → finds login(), verify_token(), etc.
+    - semantic_search("error handling") → finds try/except blocks, error classes
+    - semantic_search("database connection") → finds DB setup code
+
+    Args:
+        query: Natural language description of what you're looking for.
+        top_k: Number of results to return (default: 5).
+
+    Returns:
+        dict with status and matching code chunks with similarity scores.
+    """
+    try:
+        from .rag import get_index
+        index = get_index()
+
+        if not index.chunks:
+            return {
+                "status": "error",
+                "error_message": "No index found. Run index_codebase() first to build the search index.",
+            }
+
+        results = index.search(query, top_k=top_k)
+        audit_log("tools", "semantic_search", {"query": query, "top_k": top_k}, "success")
+        return {"status": "success", "results": results}
+    except Exception as e:
+        audit_log("tools", "semantic_search", {"query": query}, "error")
+        return {"status": "error", "error_message": str(e)}

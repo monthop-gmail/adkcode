@@ -8,7 +8,8 @@ AI coding agent powered by [Google ADK](https://google.github.io/adk-docs/) (Age
 - **3 ways to use** — Web UI (`adk web`), CLI REPL (`adk run`), API server (`adk api_server`)
 - **Multi-model** — smart model for analysis + fast model for execution (configurable)
 - **Multi-agent system** — orchestrator + coder + reviewer + tester agents
-- **9 coding tools** — read, write, edit, list, grep, shell, web_search, web_fetch, read_image
+- **11 coding tools** — read, write, edit, list, grep, shell, web_search, web_fetch, read_image, index_codebase, semantic_search
+- **RAG search** — semantic code search using Gemini embeddings (free)
 - **AGENTS.md support** — project-specific instructions loaded automatically
 - **[MCP support](docs/mcp.md)** — connect to external tools via Model Context Protocol
 
@@ -59,6 +60,29 @@ adk api_server --port 8000
 | `web_fetch` | Fetch content from a URL |
 | `read_image` | Analyze images/screenshots with Gemini vision |
 | `shell` | Execute shell commands |
+| `index_codebase` | Build semantic search index of source files |
+| `semantic_search` | Search code by meaning using Gemini embeddings |
+
+## RAG (Semantic Code Search)
+
+adkcode can search your codebase by meaning, not just keywords:
+
+```
+> "index the project"
+→ index_codebase(".") → Indexed 5 files, 12 chunks
+
+> "find code related to safety checks"
+→ semantic_search("safety checks") → guardrails.py (score: 0.87)
+
+> "where is the MCP configuration loaded?"
+→ semantic_search("MCP configuration") → mcp_config.py (score: 0.91)
+```
+
+How it works:
+1. `index_codebase` scans source files and generates Gemini embeddings
+2. Index is saved to `.adkcode_index.json` (reused across sessions)
+3. `semantic_search` finds code by meaning using cosine similarity
+4. Embeddings are **free** via Gemini Embedding API
 
 ## AGENTS.md
 
@@ -181,7 +205,8 @@ adkcode/
 ├── adkcode/
 │   ├── __init__.py         # Exports root_agent
 │   ├── agent.py            # Multi-agent system (orchestrator + sub-agents)
-│   ├── tools.py            # 9 coding tools
+│   ├── tools.py            # 11 coding tools
+│   ├── rag.py              # RAG: semantic code search with embeddings
 │   ├── guardrails.py       # Safety checks, file access, audit log
 │   └── mcp_config.py       # MCP server config loader
 ├── docs/

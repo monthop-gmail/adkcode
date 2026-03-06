@@ -33,7 +33,8 @@ Route user requests to the appropriate agent:
 - Run tests, check test results, fix failing tests → tester
 - General questions, web search, research → handle yourself
 
-You also have web search and URL fetching tools for research tasks.
+You also have web search, URL fetching, and semantic code search tools.
+Use index_codebase to build a search index, then semantic_search to find relevant code by meaning.
 Be concise and direct in your responses.
 """
 
@@ -45,6 +46,7 @@ Guidelines:
 - Write clean, well-structured code
 - Use shell to run commands when needed (install packages, build, etc.)
 - Use read_image to analyze screenshots, mockups, or diagrams and implement matching code
+- Use semantic_search to find related code before making changes
 - Be concise — show what you changed, not lengthy explanations
 """
 
@@ -169,6 +171,8 @@ coder = Agent(
         tools.grep,
         tools.shell,
         tools.read_image,
+        tools.index_codebase,
+        tools.semantic_search,
     ],
 )
 
@@ -182,6 +186,7 @@ reviewer = Agent(
         tools.list_files,
         tools.grep,
         tools.read_image,
+        tools.semantic_search,
     ],
 )
 
@@ -197,6 +202,7 @@ tester = Agent(
         tools.list_files,
         tools.grep,
         tools.shell,
+        tools.semantic_search,
     ],
 )
 
@@ -205,6 +211,8 @@ tester = Agent(
 orchestrator_tools = [
     tools.web_search,
     tools.web_fetch,
+    tools.semantic_search,
+    tools.index_codebase,
 ]
 orchestrator_tools.extend(build_mcp_tools())
 
