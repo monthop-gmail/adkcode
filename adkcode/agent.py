@@ -10,6 +10,13 @@ from .mcp_config import load_mcp_config
 
 logger = logging.getLogger(__name__)
 
+# --- Model Configuration ---
+# Smart model for routing & analysis, fast model for coding & testing
+MODEL_SMART = os.environ.get("ADKCODE_MODEL_SMART", "gemini-2.5-flash")
+MODEL_FAST = os.environ.get("ADKCODE_MODEL_FAST", "gemini-2.0-flash")
+
+logger.info(f"Models: smart={MODEL_SMART}, fast={MODEL_FAST}")
+
 # --- Specialized Prompts ---
 
 ORCHESTRATOR_PROMPT = """You are adkcode, an AI coding agent orchestrator. You coordinate specialized sub-agents:
@@ -146,7 +153,7 @@ def build_mcp_tools() -> list:
 # --- Sub-Agents ---
 
 coder = Agent(
-    model="gemini-2.0-flash",
+    model=MODEL_FAST,
     name="coder",
     description="Writes, edits, and creates code files. Use for any coding task: write new code, edit existing files, fix bugs, refactor, create projects.",
     instruction=build_instruction(CODER_PROMPT),
@@ -161,7 +168,7 @@ coder = Agent(
 )
 
 reviewer = Agent(
-    model="gemini-2.0-flash",
+    model=MODEL_SMART,
     name="reviewer",
     description="Reviews code for bugs, security issues, and best practices. Read-only analysis — does not modify files.",
     instruction=build_instruction(REVIEWER_PROMPT),
@@ -173,7 +180,7 @@ reviewer = Agent(
 )
 
 tester = Agent(
-    model="gemini-2.0-flash",
+    model=MODEL_FAST,
     name="tester",
     description="Runs tests, analyzes test results, and fixes failing tests. Use for pytest, jest, go test, or any test framework.",
     instruction=build_instruction(TESTER_PROMPT),
@@ -196,7 +203,7 @@ orchestrator_tools = [
 orchestrator_tools.extend(build_mcp_tools())
 
 root_agent = Agent(
-    model="gemini-2.0-flash",
+    model=MODEL_SMART,
     name="adkcode",
     description="AI coding agent orchestrator with specialized sub-agents for coding, reviewing, and testing.",
     instruction=build_instruction(ORCHESTRATOR_PROMPT),

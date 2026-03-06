@@ -29,8 +29,8 @@ adkcode (orchestrator) — web_search, web_fetch, MCP tools
 
 ## Phase 3 — Multi-Model & Intelligence
 
-- [ ] Multi-model — Gemini 2.5 Pro สำหรับงานยาก + Flash สำหรับงานเบา
-- [ ] Auto model selection — เลือก model ตามความซับซ้อนของงาน
+- [x] Multi-model — smart model (orchestrator, reviewer) + fast model (coder, tester)
+- [x] Configurable via env vars — `ADKCODE_MODEL_SMART`, `ADKCODE_MODEL_FAST`
 - [ ] Image understanding — ใช้ Gemini vision อ่านรูป/screenshot แล้วเขียนโค้ด
 - [ ] Context management — summarize/compress เมื่อ token ใกล้ limit
 - [ ] Cost tracking — ประมาณ token usage ต่อ session

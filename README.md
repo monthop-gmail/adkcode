@@ -6,7 +6,7 @@ AI coding agent powered by [Google ADK](https://google.github.io/adk-docs/) (Age
 
 - **Google ADK framework** — agent loop, session management, streaming built-in
 - **3 ways to use** — Web UI (`adk web`), CLI REPL (`adk run`), API server (`adk api_server`)
-- **Gemini models** — powered by `gemini-2.0-flash` (configurable)
+- **Multi-model** — smart model for analysis + fast model for execution (configurable)
 - **Multi-agent system** — orchestrator + coder + reviewer + tester agents
 - **8 coding tools** — read, write, edit, list, grep, shell, web_search, web_fetch
 - **AGENTS.md support** — project-specific instructions loaded automatically
@@ -126,14 +126,26 @@ Set your API key in `.env`:
 GOOGLE_API_KEY=your-api-key-here
 ```
 
-To change the model, edit `adkcode/agent.py`:
+### Multi-Model (optional)
 
-```python
-root_agent = Agent(
-    model="gemini-2.0-flash",  # or "gemini-2.5-pro", "gemini-2.5-flash"
-    ...
-)
+adkcode uses two model tiers — a **smart** model for analysis and a **fast** model for execution:
+
+```bash
+# Smart model — orchestrator + reviewer (routing, analysis)
+ADKCODE_MODEL_SMART=gemini-2.5-flash
+
+# Fast model — coder + tester (speed, execution)
+ADKCODE_MODEL_FAST=gemini-2.0-flash
 ```
+
+| Agent | Default Model | Role |
+|-------|--------------|------|
+| orchestrator | smart (`gemini-2.5-flash`) | Route requests, web search |
+| reviewer | smart (`gemini-2.5-flash`) | Code analysis, find bugs |
+| coder | fast (`gemini-2.0-flash`) | Write/edit code |
+| tester | fast (`gemini-2.0-flash`) | Run tests, fix failures |
+
+Use `gemini-2.5-pro` for the smart model if you need maximum quality.
 
 ## Project Structure
 
@@ -162,7 +174,7 @@ Both are open-source AI coding agents with the same 8 tools and AGENTS.md suppor
 |---|--------|---------|
 | Language | Go | Python |
 | Framework | Custom HTTP + WebSocket server | Google ADK |
-| LLM | Any OpenAI-compatible (DeepSeek, Qwen, Groq, OpenAI, Ollama) | Gemini |
+| LLM | Any OpenAI-compatible (DeepSeek, Qwen, Groq, OpenAI, Ollama) | Gemini (multi-model: smart + fast) |
 | Interface | CLI REPL + one-shot | Web UI + CLI REPL + API server |
 | Multi-agent | - | Yes (orchestrator + 3 sub-agents) |
 | MCP support | - (planned) | Yes (stdio + SSE) |
