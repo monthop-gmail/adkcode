@@ -9,6 +9,7 @@ AI coding agent powered by [Google ADK](https://google.github.io/adk-docs/) (Age
 - **Gemini models** — powered by `gemini-2.0-flash` (configurable)
 - **8 coding tools** — read, write, edit, list, grep, shell, web_search, web_fetch
 - **AGENTS.md support** — project-specific instructions loaded automatically
+- **[MCP support](docs/mcp.md)** — connect to external tools via Model Context Protocol
 
 ## Quick Start
 
@@ -96,7 +97,7 @@ adkcode supports MCP servers out of the box. Create a `mcp.json` in your project
 
 Supports both **stdio** (local) and **SSE** (remote) MCP servers. Uses the same format as Claude Code / Cursor.
 
-See `mcp.json.example` for more examples.
+See `mcp.json.example` for more examples and **[docs/mcp.md](docs/mcp.md)** for the full guide.
 
 ## Configuration
 
@@ -124,6 +125,8 @@ adkcode/
 │   ├── agent.py            # Agent definition + AGENTS.md + MCP loader
 │   ├── tools.py            # 8 coding tools
 │   └── mcp_config.py       # MCP server config loader
+├── docs/
+│   └── mcp.md              # MCP guide
 ├── requirements.txt
 ├── mcp.json.example
 ├── .env.example
