@@ -10,7 +10,7 @@ AI coding agent powered by [Google ADK](https://google.github.io/adk-docs/) (Age
 - **Multi-agent system** — orchestrator + coder + reviewer + tester agents
 - **11 coding tools** — read, write, edit, list, grep, shell, web_search, web_fetch, read_image, index_codebase, semantic_search
 - **RAG search** — semantic code search using Gemini embeddings (free)
-- **AGENTS.md support** — project-specific instructions loaded automatically
+- **[AGENTS.md support](docs/agents-md.md)** — project-specific instructions loaded automatically
 - **[MCP support](docs/mcp.md)** — connect to external tools via Model Context Protocol
 
 ## Quick Start
@@ -95,7 +95,7 @@ Place an `AGENTS.md` file in your working directory to give adkcode project-spec
 - Write tests for every new function
 ```
 
-See [examples/agents-md/](examples/agents-md/) for 21 ready-to-use templates.
+See [examples/agents-md/](examples/agents-md/) for 21 ready-to-use templates and **[docs/agents-md.md](docs/agents-md.md)** for the full guide.
 
 ## MCP (Model Context Protocol)
 
@@ -210,7 +210,10 @@ adkcode/
 │   ├── guardrails.py       # Safety checks, file access, audit log
 │   └── mcp_config.py       # MCP server config loader
 ├── docs/
+│   ├── agents-md.md        # AGENTS.md guide
 │   └── mcp.md              # MCP guide
+├── examples/
+│   └── agents-md/          # 21 AGENTS.md templates
 ├── requirements.txt
 ├── mcp.json.example
 ├── .env.example
