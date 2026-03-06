@@ -8,6 +8,8 @@ import urllib.parse
 import urllib.request
 import re
 
+from .guardrails import check_command, check_file_access, audit_log
+
 
 def read_file(path: str) -> dict:
     """Read the contents of a file at the given path.
@@ -18,11 +20,18 @@ def read_file(path: str) -> dict:
     Returns:
         dict with status and file content or error message.
     """
+    access = check_file_access(path, write=False)
+    if not access["allowed"]:
+        audit_log("tools", "read_file", {"path": path}, "blocked")
+        return {"status": "error", "error_message": access["reason"]}
+
     try:
         with open(path, "r", encoding="utf-8", errors="replace") as f:
             content = f.read()
+        audit_log("tools", "read_file", {"path": path}, "success")
         return {"status": "success", "content": content}
     except Exception as e:
+        audit_log("tools", "read_file", {"path": path}, "error")
         return {"status": "error", "error_message": str(e)}
 
 
@@ -36,12 +45,19 @@ def write_file(path: str, content: str) -> dict:
     Returns:
         dict with status and result message.
     """
+    access = check_file_access(path, write=True)
+    if not access["allowed"]:
+        audit_log("tools", "write_file", {"path": path}, "blocked")
+        return {"status": "error", "error_message": access["reason"]}
+
     try:
         os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
         with open(path, "w", encoding="utf-8") as f:
             f.write(content)
+        audit_log("tools", "write_file", {"path": path, "content": content}, "success")
         return {"status": "success", "message": f"Wrote {len(content)} bytes to {path}"}
     except Exception as e:
+        audit_log("tools", "write_file", {"path": path}, "error")
         return {"status": "error", "error_message": str(e)}
 
 
@@ -56,6 +72,11 @@ def edit_file(path: str, old_string: str, new_string: str) -> dict:
     Returns:
         dict with status and result message.
     """
+    access = check_file_access(path, write=True)
+    if not access["allowed"]:
+        audit_log("tools", "edit_file", {"path": path}, "blocked")
+        return {"status": "error", "error_message": access["reason"]}
+
     try:
         with open(path, "r", encoding="utf-8") as f:
             content = f.read()
@@ -69,8 +90,10 @@ def edit_file(path: str, old_string: str, new_string: str) -> dict:
         new_content = content.replace(old_string, new_string, 1)
         with open(path, "w", encoding="utf-8") as f:
             f.write(new_content)
+        audit_log("tools", "edit_file", {"path": path}, "success")
         return {"status": "success", "message": f"Edited {path}"}
     except Exception as e:
+        audit_log("tools", "edit_file", {"path": path}, "error")
         return {"status": "error", "error_message": str(e)}
 
 
@@ -150,6 +173,12 @@ def shell(command: str) -> dict:
     Returns:
         dict with status, stdout, stderr, and return code.
     """
+    # Safety check
+    safety = check_command(command)
+    if not safety["allowed"]:
+        audit_log("tools", "shell", {"command": command}, "blocked")
+        return {"status": "error", "error_message": safety["reason"]}
+
     try:
         result = subprocess.run(
             command,
@@ -158,15 +187,25 @@ def shell(command: str) -> dict:
             text=True,
             timeout=120,
         )
-        return {
+        audit_log("tools", "shell", {"command": command}, "success")
+
+        response = {
             "status": "success",
             "stdout": result.stdout,
             "stderr": result.stderr,
             "returncode": result.returncode,
         }
+
+        # Add safety warning if command is dangerous
+        if safety["level"] == "warning":
+            response["warning"] = safety["reason"]
+
+        return response
     except subprocess.TimeoutExpired:
+        audit_log("tools", "shell", {"command": command}, "timeout")
         return {"status": "error", "error_message": "Command timed out (120s)"}
     except Exception as e:
+        audit_log("tools", "shell", {"command": command}, "error")
         return {"status": "error", "error_message": str(e)}
 
 

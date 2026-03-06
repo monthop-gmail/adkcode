@@ -36,12 +36,13 @@ adkcode (orchestrator) — web_search, web_fetch, MCP tools
 - [ ] Context management — summarize/compress เมื่อ token ใกล้ limit
 - [ ] Cost tracking — ประมาณ token usage ต่อ session
 
-## Phase 4 — Safety & Guardrails
+## Phase 4 — Safety & Guardrails ✅
 
-- [ ] Callbacks — safety check ก่อนรัน shell command อันตราย (rm -rf, drop table)
-- [ ] File access whitelist — จำกัด directory ที่ agent เข้าถึงได้
+- [x] Shell safety — block destructive commands (rm -rf /, mkfs, fork bomb), warn on dangerous ones (sudo, force push, DROP TABLE)
+- [x] File access whitelist — `ADKCODE_ALLOWED_DIRS` จำกัด directory ที่ agent เข้าถึงได้
+- [x] Sensitive file protection — block .env reads, /etc/shadow, /etc/passwd
+- [x] Audit log — `ADKCODE_AUDIT_LOG` บันทึก tool calls ทั้งหมดเป็น JSON lines
 - [ ] Rate limiting — จำกัดจำนวน requests / token budget
-- [ ] Audit log — บันทึก tool calls ทั้งหมด
 
 ## Phase 5 — Better Tools
 

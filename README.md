@@ -149,6 +149,31 @@ ADKCODE_MODEL_FAST=gemini-2.0-flash
 
 Use `gemini-2.5-pro` for the smart model if you need maximum quality.
 
+### Safety & Guardrails
+
+adkcode has built-in safety features to protect against dangerous operations:
+
+**Shell command safety:**
+- Destructive commands are blocked automatically (`rm -rf /`, `mkfs`, fork bombs)
+- Dangerous commands show warnings (`sudo`, `git push --force`, `DROP TABLE`)
+
+**File access control (optional):**
+```bash
+# Restrict agent to specific directories only
+ADKCODE_ALLOWED_DIRS=/workspace,/home/user/projects
+```
+
+**Audit log (optional):**
+```bash
+# Log all tool calls to a JSON lines file
+ADKCODE_AUDIT_LOG=/var/log/adkcode/audit.jsonl
+```
+
+Audit log format:
+```json
+{"timestamp": "2026-03-06T12:00:00Z", "agent": "coder", "tool": "shell", "args": {"command": "ls"}, "result": "success"}
+```
+
 ## Project Structure
 
 ```
@@ -156,7 +181,8 @@ adkcode/
 ├── adkcode/
 │   ├── __init__.py         # Exports root_agent
 │   ├── agent.py            # Multi-agent system (orchestrator + sub-agents)
-│   ├── tools.py            # 8 coding tools
+│   ├── tools.py            # 9 coding tools
+│   ├── guardrails.py       # Safety checks, file access, audit log
 │   └── mcp_config.py       # MCP server config loader
 ├── docs/
 │   └── mcp.md              # MCP guide
