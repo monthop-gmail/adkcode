@@ -7,6 +7,7 @@ AI coding agent powered by [Google ADK](https://google.github.io/adk-docs/) (Age
 - **Google ADK framework** — agent loop, session management, streaming built-in
 - **3 ways to use** — Web UI (`adk web`), CLI REPL (`adk run`), API server (`adk api_server`)
 - **Gemini models** — powered by `gemini-2.0-flash` (configurable)
+- **Multi-agent system** — orchestrator + coder + reviewer + tester agents
 - **8 coding tools** — read, write, edit, list, grep, shell, web_search, web_fetch
 - **AGENTS.md support** — project-specific instructions loaded automatically
 - **[MCP support](docs/mcp.md)** — connect to external tools via Model Context Protocol
@@ -99,6 +100,24 @@ Supports both **stdio** (local) and **SSE** (remote) MCP servers. Uses the same 
 
 See `mcp.json.example` for more examples and **[docs/mcp.md](docs/mcp.md)** for the full guide.
 
+## Multi-Agent Architecture
+
+adkcode uses a multi-agent system where each agent has a specialized role:
+
+```
+adkcode (orchestrator) — web search, URL fetch, MCP tools
+    ├── coder    → write, edit, create code (read, write, edit, list, grep, shell)
+    ├── reviewer → review code quality, find bugs (read, list, grep — read-only)
+    └── tester   → run tests, fix failures (read, write, edit, list, grep, shell)
+```
+
+The orchestrator automatically routes your requests to the right agent based on what you ask. You can also ask for a specific agent:
+
+- *"สร้างไฟล์ hello.py"* → routes to **coder**
+- *"review โค้ดใน agent.py"* → routes to **reviewer**
+- *"รัน pytest"* → routes to **tester**
+- *"ค้นหาข่าว AI"* → handled by **orchestrator** directly
+
 ## Configuration
 
 Set your API key in `.env`:
@@ -122,7 +141,7 @@ root_agent = Agent(
 adkcode/
 ├── adkcode/
 │   ├── __init__.py         # Exports root_agent
-│   ├── agent.py            # Agent definition + AGENTS.md + MCP loader
+│   ├── agent.py            # Multi-agent system (orchestrator + sub-agents)
 │   ├── tools.py            # 8 coding tools
 │   └── mcp_config.py       # MCP server config loader
 ├── docs/
@@ -145,6 +164,7 @@ Both are open-source AI coding agents with the same 8 tools and AGENTS.md suppor
 | Framework | Custom HTTP + WebSocket server | Google ADK |
 | LLM | Any OpenAI-compatible (DeepSeek, Qwen, Groq, OpenAI, Ollama) | Gemini |
 | Interface | CLI REPL + one-shot | Web UI + CLI REPL + API server |
+| Multi-agent | - | Yes (orchestrator + 3 sub-agents) |
 | MCP support | - (planned) | Yes (stdio + SSE) |
 | Config | `.env` / `config.yaml` | `.env` |
 | Session | In-memory | ADK built-in |
@@ -157,9 +177,9 @@ Both are open-source AI coding agents with the same 8 tools and AGENTS.md suppor
 See [ROADMAP.md](ROADMAP.md) for the full development plan.
 
 **Next up:**
-- Multi-Agent (orchestrator + coder + reviewer + test agents)
 - Multi-Model (Pro for hard tasks, Flash for easy tasks)
 - Safety guardrails (confirm before dangerous commands)
+- Git tools, test runner
 
 ## Contributing
 

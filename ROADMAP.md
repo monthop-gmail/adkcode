@@ -10,21 +10,21 @@
 - [x] .env configuration
 - [x] Documentation (README, docs/mcp.md)
 
-## Phase 2 — Multi-Agent
+## Phase 2 — Multi-Agent (Done)
 
 ADK รองรับ sub-agents — ใช้ประโยชน์จากจุดแข็งนี้:
 
-- [ ] Orchestrator pattern — root agent สั่งงาน sub-agents
-- [ ] Coder agent — เขียน/แก้โค้ดโดยเฉพาะ
-- [ ] Reviewer agent — review โค้ดก่อน commit
-- [ ] Test agent — รัน test + วิเคราะห์ผลอัตโนมัติ
-- [ ] Agent routing — เลือก agent ที่เหมาะกับงานอัตโนมัติ
+- [x] Orchestrator pattern — root agent สั่งงาน sub-agents
+- [x] Coder agent — เขียน/แก้โค้ดโดยเฉพาะ
+- [x] Reviewer agent — review โค้ด (read-only)
+- [x] Test agent — รัน test + วิเคราะห์ผลอัตโนมัติ
+- [x] Agent routing — LLM เลือก agent ที่เหมาะกับงานอัตโนมัติ
 
 ```
-adkcode (orchestrator)
-    ├── coder-agent    → เขียน/แก้โค้ด
-    ├── reviewer-agent → review โค้ด
-    └── test-agent     → รัน test + แก้ bug
+adkcode (orchestrator) — web_search, web_fetch, MCP tools
+    ├── coder    → เขียน/แก้โค้ด (read, write, edit, list, grep, shell)
+    ├── reviewer → review โค้ด (read, list, grep — read-only)
+    └── tester   → รัน test + แก้ bug (read, write, edit, list, grep, shell)
 ```
 
 ## Phase 3 — Multi-Model & Intelligence
