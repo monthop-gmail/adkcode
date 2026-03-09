@@ -5,7 +5,7 @@ AI coding agent powered by [Google ADK](https://google.github.io/adk-docs/) (Age
 ## Features
 
 - **Google ADK framework** — agent loop, session management, streaming built-in
-- **3 ways to use** — Web UI (`adk web`), CLI REPL (`adk run`), API server (`adk api_server`)
+- **REST API + Web UI** — production-ready API for external clients + ADK web UI for testing
 - **Multi-model** — smart model for analysis + fast model for execution (configurable)
 - **Multi-agent system** — orchestrator + coder + reviewer + tester agents
 - **11 coding tools** — read, write, edit, list, grep, shell, web_search, web_fetch, read_image, index_codebase, semantic_search
@@ -13,6 +13,7 @@ AI coding agent powered by [Google ADK](https://google.github.io/adk-docs/) (Age
 - **[AGENTS.md support](docs/agents-md.md)** — project-specific instructions loaded automatically
 - **[MCP support](docs/mcp.md)** — connect to external tools via Model Context Protocol
 - **Plugin system** — load knowledge-work plugins (skills, commands) from `plugins/` directory
+- **Vertex AI support** — use API key or Google Cloud ADC (no key needed)
 - **[Getting started guide](docs/getting-started.md)** — คู่มือใช้งานเบื้องต้น (ภาษาไทย)
 
 ## Quick Start
@@ -32,21 +33,19 @@ cp .env.example .env
 docker compose up -d
 ```
 
-Open http://localhost:8000 — select `adkcode` from the dropdown and start chatting!
+Open http://localhost:8000 — Web UI + REST API ready!
 
 ### 3. Run locally (without Docker)
 
 ```bash
 pip install -r requirements.txt
 
-# Web UI
-adk web --port 8000
+# REST API + Web UI (production)
+python api.py
 
-# CLI REPL
-adk run adkcode
-
-# API Server
-adk api_server --port 8000
+# Or use ADK CLI directly
+adk web --port 8000   # Web UI only
+adk run adkcode       # CLI REPL
 ```
 
 ## Tools
@@ -146,12 +145,43 @@ The orchestrator automatically routes your requests to the right agent based on 
 - *"รัน pytest"* → routes to **tester**
 - *"ค้นหาข่าว AI"* → handled by **orchestrator** directly
 
+## REST API
+
+adkcode includes a REST API for external clients (LINE bot, Slack, custom frontend). Sessions are shared with the Web UI.
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/` | GET | ADK Web UI |
+| `/session` | POST | Create session |
+| `/session/{id}` | GET | Get session info |
+| `/session/{id}` | DELETE | Delete session |
+| `/session/{id}/message` | POST | Send prompt, get response |
+| `/session/{id}/abort` | POST | Cancel running prompt |
+
+Example:
+```bash
+# Create session
+curl -X POST http://localhost:8000/session
+
+# Send message
+curl -X POST http://localhost:8000/session/SESSION_ID/message \
+  -H "Content-Type: application/json" \
+  -d '{"content": "สร้างไฟล์ hello.py"}'
+```
+
 ## Configuration
 
-Set your API key in `.env`:
+Google AI — choose one auth method in `.env`:
 
 ```bash
+# Option 1: API key (simple)
 GOOGLE_API_KEY=your-api-key-here
+
+# Option 2: Vertex AI + ADC (no API key needed)
+# Run `gcloud auth application-default login` on host first
+GOOGLE_GENAI_USE_VERTEXAI=true
+GOOGLE_CLOUD_PROJECT=your-gcp-project-id
+GOOGLE_CLOUD_LOCATION=us-central1
 ```
 
 ### Multi-Model (optional)
@@ -259,6 +289,7 @@ adkcode/
 │   └── mcp.md              # MCP guide
 ├── examples/
 │   └── agents-md/          # 21 AGENTS.md templates
+├── api.py                  # REST API + ADK web UI server
 ├── requirements.txt
 ├── mcp.json.example
 ├── .env.example
@@ -276,7 +307,7 @@ Both are open-source AI coding agents with the same 8 tools and AGENTS.md suppor
 | Language | Go | Python |
 | Framework | Custom HTTP + WebSocket server | Google ADK |
 | LLM | Any OpenAI-compatible (DeepSeek, Qwen, Groq, OpenAI, Ollama) | Gemini (multi-model: smart + fast) |
-| Interface | CLI REPL + one-shot | Web UI + CLI REPL + API server |
+| Interface | CLI REPL + one-shot | REST API + Web UI + CLI REPL |
 | Multi-agent | - | Yes (orchestrator + 3 sub-agents) |
 | MCP support | - (planned) | Yes (stdio + SSE) |
 | Config | `.env` / `config.yaml` | `.env` |

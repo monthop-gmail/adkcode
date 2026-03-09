@@ -64,8 +64,11 @@ adkcode (orchestrator) — web_search, web_fetch, MCP tools
 - [x] RAG — semantic code search ด้วย Gemini embeddings (index_codebase + semantic_search)
 - [x] Plugin system — โหลด knowledge-work plugins (skills, commands) จาก `plugins/` directory
 - [x] Engineering plugin — code review, testing strategy, debugging, architecture, incident response
+- [x] Data plugin — SQL queries, data analysis, visualization, dashboards
+- [x] Productivity plugin — task management, memory management
+- [x] REST API — FastAPI wrapper สำหรับ external clients (LINE bot, Slack, custom frontend)
+- [x] Vertex AI support — ใช้ gcloud ADC แทน API key ได้
 - [ ] Voice input/output
-- [ ] More plugins — sales, data, productivity, etc.
 - [ ] Agent marketplace — share/install custom agents
 - [ ] Git-aware context — auto-include changed files
 - [ ] Self-improving — agent เรียนรู้จาก feedback

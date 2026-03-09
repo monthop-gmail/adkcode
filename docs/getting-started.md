@@ -154,6 +154,22 @@ review ไฟล์ทั้งหมดใน src/ แล้วแก้ issues
 - **Multi-agent** — ไม่ต้องเลือก agent เอง ระบบ route อัตโนมัติ (coding → coder, review → reviewer, test → tester)
 - **Context** — ยิ่งให้ข้อมูลเยอะ ผลลัพธ์ยิ่งดี เช่น บอก framework, ภาษา, ข้อจำกัด
 
+## REST API
+
+นอกจาก Web UI แล้ว adkcode มี REST API สำหรับเชื่อมต่อกับ external clients:
+
+```bash
+# สร้าง session
+curl -X POST http://localhost:8000/session
+
+# ส่ง prompt
+curl -X POST http://localhost:8000/session/SESSION_ID/message \
+  -H "Content-Type: application/json" \
+  -d '{"content": "สวัสดี"}'
+```
+
+ดู [README.md](../README.md#rest-api) สำหรับ endpoints ทั้งหมด
+
 ## Troubleshooting
 
 | ปัญหา | วิธีแก้ |
