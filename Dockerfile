@@ -9,9 +9,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY adkcode/ /app/adkcode/
 COPY plugins/ /app/adkcode/plugins/
+COPY api.py /app/api.py
 
 RUN mkdir -p /workspace
 
 EXPOSE 8000
 WORKDIR /workspace
-CMD ["adk", "web", "--host", "0.0.0.0", "--port", "8000", "/app"]
+CMD ["python", "/app/api.py"]
