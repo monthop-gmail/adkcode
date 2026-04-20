@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "thai-law-api": {
+      "url": "https://api.krisdika.go.th/sse",
+      "headers": {
+        "Authorization": "Bearer YOUR_API_KEY"
+      },
+      "tool_filter": ["search_law", "get_judgment", "get_gazette"]
+    },
+    "supreme-court": {
+      "url": "https://api.supremecourt.or.th/sse",
+      "headers": {},
+      "tool_filter": ["search_judgment", "get_case_info"]
+    }
+  }
+}
